@@ -1,5 +1,7 @@
 # FieldNotes
 
+![FieldNotes: Keep reading. Keep moving.](docs/images/fieldnotes-wordmark.png)
+
 A World of Warcraft: Forever addon that puts your **focused quest's** text in a small reading panel right beside it in the objective tracker. You can follow the story and the objective while you travel, without opening the quest log.
 
 ```

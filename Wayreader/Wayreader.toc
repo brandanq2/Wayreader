@@ -8,6 +8,7 @@
 ## SavedVariables: WayreaderDB
 ## SavedVariablesPerCharacter: WayreaderCharDB
 ## X-Website: https://github.com/brandanq2/Wayreader
+## X-Curse-Project-ID: 1812551
 
 Core.lua
 Quest.lua

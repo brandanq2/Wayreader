@@ -1,0 +1,17 @@
+<Bindings>
+	<Binding name="FIELDNOTES_SCROLLDOWN" category="BINDING_CATEGORY_FIELDNOTES">
+		FieldNotes.Scroll(1)
+	</Binding>
+	<Binding name="FIELDNOTES_SCROLLUP" category="BINDING_CATEGORY_FIELDNOTES">
+		FieldNotes.Scroll(-1)
+	</Binding>
+	<Binding name="FIELDNOTES_PAGEDOWN" category="BINDING_CATEGORY_FIELDNOTES">
+		FieldNotes.Page(1)
+	</Binding>
+	<Binding name="FIELDNOTES_PAGEUP" category="BINDING_CATEGORY_FIELDNOTES">
+		FieldNotes.Page(-1)
+	</Binding>
+	<Binding name="FIELDNOTES_TOGGLE" category="BINDING_CATEGORY_FIELDNOTES">
+		FieldNotes.ToggleCollapse()
+	</Binding>
+</Bindings>

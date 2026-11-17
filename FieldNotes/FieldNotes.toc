@@ -1,0 +1,16 @@
+## Interface: 16001
+## AllowLoadGameType: forever
+## ExcludeLoadGameType: standard, classic
+## Title: FieldNotes
+## Notes: Read your focused quest's story and objectives in a panel beside the objective tracker.
+## Author: brandanq2
+## Version: @project-version@
+## SavedVariables: FieldNotesDB
+## SavedVariablesPerCharacter: FieldNotesCharDB
+## X-Website: https://github.com/brandanq2/FieldNotes
+
+Core.lua
+Quest.lua
+Tracker.lua
+Panel.lua
+EditMode.lua

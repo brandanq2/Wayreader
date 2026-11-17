@@ -1,0 +1,115 @@
+name: Release
+
+# Push a tag like v0.1.0 (or v0.2.0-beta.1) to package FieldNotes, publish a
+# GitHub release, and upload the zip to CurseForge for WoW: Forever.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to (re)release, e.g. v0.1.0'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Resolve version and release type
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          case "$VERSION" in
+            *alpha*) RELEASE_TYPE=alpha ;;
+            *beta*)  RELEASE_TYPE=beta ;;
+            *)       RELEASE_TYPE=release ;;
+          esac
+          echo "TAG=${TAG}"                   >> "$GITHUB_ENV"
+          echo "VERSION=${VERSION}"           >> "$GITHUB_ENV"
+          echo "RELEASE_TYPE=${RELEASE_TYPE}" >> "$GITHUB_ENV"
+
+      - name: Build changelog
+        run: |
+          PREV=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)
+          RANGE="${PREV:+${PREV}..}${TAG}"
+          git log --no-merges --pretty='- %s' "$RANGE" > CHANGELOG.txt
+          [ -s CHANGELOG.txt ] || echo "- Release ${VERSION}" > CHANGELOG.txt
+          cat CHANGELOG.txt
+
+      - name: Package addon zip
+        run: |
+          sed -i "s/@project-version@/${VERSION}/" FieldNotes/FieldNotes.toc
+          mkdir -p dist
+          zip -r "dist/FieldNotes-${VERSION}.zip" FieldNotes/
+          echo "ADDON_ZIP=dist/FieldNotes-${VERSION}.zip" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: FieldNotes ${{ env.VERSION }}
+          body_path: CHANGELOG.txt
+          prerelease: ${{ env.RELEASE_TYPE != 'release' }}
+          files: ${{ env.ADDON_ZIP }}
+
+      - name: Upload to CurseForge
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_PROJECT_ID: ${{ secrets.CF_PROJECT_ID }}
+          # Optional repo variable to pin the Forever version type if name matching ever fails.
+          CF_GAME_VERSION_TYPE_ID: ${{ vars.CF_GAME_VERSION_TYPE_ID }}
+        run: |
+          if [ -z "$CF_API_KEY" ] || [ -z "$CF_PROJECT_ID" ]; then
+            echo "CF_API_KEY or CF_PROJECT_ID not set — skipping CurseForge upload"
+            exit 0
+          fi
+          API="https://wow.curseforge.com/api"
+
+          # TOC interface -> CurseForge version name (16001 -> 1.60.1)
+          INTERFACE_VER=$(grep "^## Interface:" FieldNotes/FieldNotes.toc | awk '{print $NF}' | tr -d '\r')
+          VERSION_STR="$((INTERFACE_VER / 10000)).$(( (INTERFACE_VER % 10000) / 100 )).$((INTERFACE_VER % 100))"
+
+          # Find the Forever version type by name unless pinned.
+          if [ -z "$CF_GAME_VERSION_TYPE_ID" ]; then
+            TYPES=$(curl -sS --fail-with-body "$API/game/version-types" -H "X-Api-Token: ${CF_API_KEY}")
+            CF_GAME_VERSION_TYPE_ID=$(echo "$TYPES" | jq -r \
+              '[.[] | select(((.name // "") + " " + (.slug // "")) | test("forever|camelot"; "i"))][0].id // empty')
+          fi
+
+          VERSIONS=$(curl -sS --fail-with-body "$API/game/versions" -H "X-Api-Token: ${CF_API_KEY}")
+          if [ -n "$CF_GAME_VERSION_TYPE_ID" ]; then
+            MATCHES=$(echo "$VERSIONS" | jq -c --arg v "$VERSION_STR" --argjson t "$CF_GAME_VERSION_TYPE_ID" \
+              '[.[] | select(.name == $v and .gameVersionTypeID == $t)]')
+          else
+            MATCHES=$(echo "$VERSIONS" | jq -c --arg v "$VERSION_STR" '[.[] | select(.name == $v)]')
+          fi
+
+          if [ "$(echo "$MATCHES" | jq length)" != "1" ]; then
+            echo "Expected exactly one CurseForge game version named ${VERSION_STR} (type: ${CF_GAME_VERSION_TYPE_ID:-any}); got:"
+            echo "$MATCHES" | jq .
+            exit 1
+          fi
+          CF_VERSION_ID=$(echo "$MATCHES" | jq -r '.[0].id')
+
+          METADATA=$(jq -n \
+            --rawfile changelog CHANGELOG.txt \
+            --arg releaseType "$RELEASE_TYPE" \
+            --arg displayName "FieldNotes ${VERSION}" \
+            --argjson gameVersion "$CF_VERSION_ID" \
+            '{changelog: $changelog, changelogType: "markdown", displayName: $displayName,
+              gameVersions: [$gameVersion], releaseType: $releaseType}')
+
+          echo "Uploading ${ADDON_ZIP} for WoW: Forever ${VERSION_STR} (CF version ID ${CF_VERSION_ID}, ${RELEASE_TYPE})"
+          curl -sS --fail-with-body -X POST "$API/projects/${CF_PROJECT_ID}/upload-file" \
+            -H "X-Api-Token: ${CF_API_KEY}" \
+            --form-string "metadata=${METADATA}" \
+            -F "file=@${ADDON_ZIP}"

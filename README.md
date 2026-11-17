@@ -1,6 +1,6 @@
-# FieldNotes
+# Wayreader
 
-![FieldNotes: Keep reading. Keep moving.](docs/images/fieldnotes-wordmark.png)
+![Wayreader: Turn the page, take the path.](docs/images/wayreader-wordmark.png)
 
 A World of Warcraft: Forever addon that puts your **focused quest's** text in a small reading panel right beside it in the objective tracker. You can follow the story and the objective while you travel, without opening the quest log.
 
@@ -31,14 +31,14 @@ The default size is relative to your screen: about a fifth of its width and a th
 
 It works like Blizzard's own frames in **Edit Mode**. The panel shows with a blue outline:
 
-- **Click it** to select it (yellow outline) and open the FieldNotes settings window: **Width**, **Max Height**, **Text Size**, **Background Opacity**, **Attach to Objective Tracker**, **Show Story**, **Hide in Combat**, plus **Reset Size** and **Reset Position**.
+- **Click it** to select it (yellow outline) and open the Wayreader settings window: **Width**, **Max Height**, **Text Size**, **Background Opacity**, **Attach to Objective Tracker**, **Show Story**, **Hide in Combat**, plus **Reset Size** and **Reset Position**.
 - **Drag it** anywhere, for example a narrow column along the edge of the screen. It then stays there instead of following the tracker. Tick *Attach to Objective Tracker* to put it back.
 
-`/fn unlock` does the same without opening Edit Mode; close the settings window when you're done.
+`/wr unlock` does the same without opening Edit Mode; close the settings window when you're done.
 
 ## Key bindings
 
-In their own **FieldNotes** section of **Options → Keybindings**. These work without hovering over the panel:
+In their own **Wayreader** section of **Options → Keybindings**. These work without hovering over the panel:
 
 | Binding | |
 |---|---|
@@ -52,18 +52,18 @@ Tip: the Keybindings screen accepts mouse wheel combinations. Binding **Shift + 
 
 | Command | |
 |---|---|
-| `/fn unlock` / `/fn lock` | Move and resize the panel without opening Edit Mode |
-| `/fn attach` | Put the panel back beside the focused quest in the tracker |
-| `/fn toggle` | Turn the panel on or off |
-| `/fn open` | Reopen a collapsed panel |
-| `/fn story` | Show or hide the Story section |
-| `/fn combat` | Hide the panel during combat |
-| `/fn border <gold/ornate/simple>` | Border style: rounded Forever gold (default), the heavier gold dialog border, or a thin line |
-| `/fn font <9-24>` | Text size (default 13) |
-| `/fn width <200-700>` | Panel width |
-| `/fn height <120-900>` | Max panel height before it scrolls |
-| `/fn reset` | Restore default settings, size and position |
-| `/fn debug` | Print what FieldNotes sees: focused quest, tracker block, anchor |
+| `/wr unlock` / `/wr lock` | Move and resize the panel without opening Edit Mode |
+| `/wr attach` | Put the panel back beside the focused quest in the tracker |
+| `/wr toggle` | Turn the panel on or off |
+| `/wr open` | Reopen a collapsed panel |
+| `/wr story` | Show or hide the Story section |
+| `/wr combat` | Hide the panel during combat |
+| `/wr border <gold/ornate/simple>` | Border style: rounded Forever gold (default), the heavier gold dialog border, or a thin line |
+| `/wr font <9-24>` | Text size (default 13) |
+| `/wr width <200-700>` | Panel width |
+| `/wr height <120-900>` | Max panel height before it scrolls |
+| `/wr reset` | Restore default settings, size and position |
+| `/wr debug` | Print what Wayreader sees: focused quest, tracker block, anchor |
 
 ## How it works
 
@@ -73,7 +73,7 @@ Tip: the Keybindings screen accepts mouse wheel combinations. Binding **Shift + 
 
 ## Releasing
 
-Same pipeline as WasteNot: pushing a `v*` tag runs `.github/workflows/release.yml`, which stamps the version into the TOC, zips `FieldNotes/`, publishes a GitHub release and uploads to CurseForge for Forever (`## Interface: 16001` → `1.60.1`). It needs the repo secrets `CF_API_KEY` and `CF_PROJECT_ID`.
+Same pipeline as WasteNot: pushing a `v*` tag runs `.github/workflows/release.yml`, which stamps the version into the TOC, zips `Wayreader/`, publishes a GitHub release and uploads to CurseForge for Forever (`## Interface: 16001` → `1.60.1`). It needs the repo secrets `CF_API_KEY` and `CF_PROJECT_ID`.
 
 ```sh
 git tag v0.1.0
@@ -82,4 +82,4 @@ git push origin v0.1.0
 
 ## Development
 
-`World of Warcraft/_forever_/Interface/AddOns/FieldNotes` is a junction to `FieldNotes/` in this repo, so edits show up after a `/reload` in-game.
+`World of Warcraft/_forever_/Interface/AddOns/Wayreader` is a junction to `Wayreader/` in this repo, so edits show up after a `/reload` in-game.

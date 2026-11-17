@@ -60,25 +60,25 @@ local STYLES = {
 ns.BORDER_STYLES = { "gold", "ornate", "simple" }
 
 local function currentStyle()
-	return STYLES[FieldNotesDB.borderStyle] or STYLES.gold
+	return STYLES[WayreaderDB.borderStyle] or STYLES.gold
 end
 
 -- Shown while editing with no quest focused, so there is something to size.
 local SAMPLE = {
 	questID = 0,
-	title = "FieldNotes",
+	title = "Wayreader",
 	progress = { { text = "Focus a quest to read it here", finished = false } },
 	objective = "Drag this panel to place it anywhere. Change its size, text and background "
-		.. "in the FieldNotes window, or tick Attach to Objective Tracker to put it back "
+		.. "in the Wayreader window, or tick Attach to Objective Tracker to put it back "
 		.. "beside your focused quest.",
 	story = "Size it so the story reads comfortably without covering anything you need to see. "
 		.. "On a smaller screen, a narrower panel along the edge of the screen works well, "
 		.. "and longer text scrolls with the mouse wheel.",
 }
 
-local titleFont = CreateFont("FieldNotesTitleFont")
-local labelFont = CreateFont("FieldNotesLabelFont")
-local bodyFont = CreateFont("FieldNotesBodyFont")
+local titleFont = CreateFont("WayreaderTitleFont")
+local labelFont = CreateFont("WayreaderLabelFont")
+local bodyFont = CreateFont("WayreaderBodyFont")
 
 local function round(n) return math.floor(n + 0.5) end
 ns.Round = round
@@ -132,10 +132,10 @@ end
 ---------------------------------------------------------------- construction
 
 function Panel:Build()
-	local f = CreateFrame("Frame", "FieldNotesPanel", UIParent, "BackdropTemplate")
+	local f = CreateFrame("Frame", "WayreaderPanel", UIParent, "BackdropTemplate")
 	styleBox(f)
 	f:SetMovable(true)
-	-- Position lives in FieldNotesDB, not the client's layout cache.
+	-- Position lives in WayreaderDB, not the client's layout cache.
 	if f.SetDontSavePosition then f:SetDontSavePosition(true) end
 	f:EnableMouseWheel(true)
 	f:SetScript("OnMouseWheel", function(_, delta)
@@ -195,7 +195,7 @@ function Panel:Build()
 	self.storyLabel = newText(content, labelFont)
 	self.story = newText(content, bodyFont)
 
-	local tab = CreateFrame("Button", "FieldNotesTab", UIParent, "BackdropTemplate")
+	local tab = CreateFrame("Button", "WayreaderTab", UIParent, "BackdropTemplate")
 	styleBox(tab)
 	tab:SetSize(TAB_SIZE, TAB_SIZE)
 	local icon = tab:CreateTexture(nil, "ARTWORK")
@@ -207,7 +207,7 @@ function Panel:Build()
 	tabHl:SetColorTexture(1, 1, 1, 0.15)
 	tab:SetScript("OnClick", function() Panel:Expand() end)
 	tab:SetScript("OnEnter", function(btn)
-		showTooltip(btn, "FieldNotes", Panel.data and ("Read: " .. Panel.data.title) or nil)
+		showTooltip(btn, "Wayreader", Panel.data and ("Read: " .. Panel.data.title) or nil)
 	end)
 	tab:SetScript("OnLeave", GameTooltip_Hide)
 	tab:Hide()
@@ -220,7 +220,7 @@ end
 function Panel:ApplyStyle()
 	local style = currentStyle()
 	PAD = style.pad
-	paintBox(self.frame, style, FieldNotesDB.bgAlpha)
+	paintBox(self.frame, style, WayreaderDB.bgAlpha)
 
 	self.title:ClearAllPoints()
 	self.title:SetPoint("TOPLEFT", PAD, -PAD)
@@ -237,7 +237,7 @@ end
 
 function Panel:ApplyFonts()
 	local path, _, flags = GameFontHighlight:GetFont()
-	local size = FieldNotesDB.fontSize
+	local size = WayreaderDB.fontSize
 	titleFont:SetFont(path, size + 2, flags or "")
 	labelFont:SetFont(path, size - 1, flags or "")
 	bodyFont:SetFont(path, size, flags or "")
@@ -275,7 +275,7 @@ function Panel:LayoutContent(width)
 	place(self.objectiveLabel, data.objective and "Objective", COLOR.label, SECTION_GAP)
 	place(self.objective, data.objective, COLOR.body, LABEL_GAP)
 
-	local story = FieldNotesDB.showStory and data.story
+	local story = WayreaderDB.showStory and data.story
 	place(self.storyLabel, story and "Story", COLOR.label, SECTION_GAP)
 	place(self.story, story or nil, COLOR.body, LABEL_GAP)
 
@@ -366,7 +366,7 @@ function Panel:ScrollBy(delta)
 end
 
 local function lineHeight()
-	return FieldNotesDB.fontSize + 2 -- font size plus line spacing
+	return WayreaderDB.fontSize + 2 -- font size plus line spacing
 end
 
 function Panel:ScrollLines(lines)
@@ -380,7 +380,7 @@ function Panel:ScrollPage(dir)
 end
 
 function Panel:ToggleCollapse()
-	if FieldNotesCharDB.collapsedQuestID and FieldNotesCharDB.collapsedQuestID == self.questID then
+	if WayreaderCharDB.collapsedQuestID and WayreaderCharDB.collapsedQuestID == self.questID then
 		self:Expand()
 	elseif self.questID then
 		self:Collapse()
@@ -402,7 +402,7 @@ function Panel:Refresh()
 	local questID = ns.Quest.GetFocusedQuestID()
 	if questID and questID ~= self.lastQuestID then
 		-- Focusing a different quest reopens a collapsed panel.
-		if self.lastQuestID then FieldNotesCharDB.collapsedQuestID = nil end
+		if self.lastQuestID then WayreaderCharDB.collapsedQuestID = nil end
 		self.lastQuestID = questID
 		self.scrollPos = 0
 		self.scrollTarget = nil
@@ -422,7 +422,7 @@ end
 -- Where the panel goes: the saved spot in custom placement, otherwise beside
 -- the focused quest's tracker block (or the tracker itself while editing).
 function Panel:GetAnchor()
-	local db = FieldNotesDB
+	local db = WayreaderDB
 	if db.placement == "custom" and db.customX and db.customY then
 		return { x = db.customX, y = db.customY }
 	end
@@ -486,7 +486,7 @@ end
 
 function Panel:Reposition()
 	if self.moving then return end -- don't fight a drag in progress
-	local db = FieldNotesDB
+	local db = WayreaderDB
 	local anchor
 	if self.data and (self.editing or (db.enabled and not (db.hideInCombat and InCombatLockdown()))) then
 		anchor = self:GetAnchor()
@@ -497,7 +497,7 @@ function Panel:Reposition()
 		return
 	end
 
-	if not self.editing and FieldNotesCharDB.collapsedQuestID == self.questID then
+	if not self.editing and WayreaderCharDB.collapsedQuestID == self.questID then
 		self.frame:Hide()
 		pin(self.tab, anchor, TAB_SIZE)
 		self.tab:Show()
@@ -520,19 +520,19 @@ end
 function Panel:SaveCustomPosition()
 	local left, top = self.frame:GetLeft(), self.frame:GetTop()
 	if not left or not top then return end
-	FieldNotesDB.placement = "custom"
-	FieldNotesDB.customX, FieldNotesDB.customY = round(left), round(top)
+	WayreaderDB.placement = "custom"
+	WayreaderDB.customX, WayreaderDB.customY = round(left), round(top)
 	self.frame.fnPoint = nil
 end
 
 function Panel:Collapse()
-	FieldNotesCharDB.collapsedQuestID = self.questID
+	WayreaderCharDB.collapsedQuestID = self.questID
 	GameTooltip:Hide()
 	self:Reposition()
 end
 
 function Panel:Expand()
-	FieldNotesCharDB.collapsedQuestID = nil
+	WayreaderCharDB.collapsedQuestID = nil
 	GameTooltip:Hide()
 	self:Reposition()
 end

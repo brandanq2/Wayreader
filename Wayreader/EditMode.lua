@@ -12,7 +12,7 @@ local EditMode = {}
 ns.EditMode = EditMode
 
 local Panel = ns.Panel
-local NAME = "FieldNotes"
+local NAME = "Wayreader"
 local DIALOG_W = 360
 local ROW_W = DIALOG_W - 40
 local WHITE = "Interface\\Buttons\\WHITE8X8"
@@ -181,8 +181,8 @@ end
 local function apply() Panel:ApplySettings() end
 
 function EditMode:BuildDialog()
-	local db = function() return FieldNotesDB end
-	local d = CreateFrame("Frame", "FieldNotesEditDialog", UIParent, "BackdropTemplate")
+	local db = function() return WayreaderDB end
+	local d = CreateFrame("Frame", "WayreaderEditDialog", UIParent, "BackdropTemplate")
 	d:SetFrameStrata("DIALOG")
 	d:SetWidth(DIALOG_W)
 	d:SetClampedToScreen(true)
@@ -317,11 +317,11 @@ function EditMode:Deselect()
 end
 
 function EditMode:CloseDialog()
-	-- From /fn unlock there's no Edit Mode window to exit, so closing locks.
+	-- From /wr unlock there's no Edit Mode window to exit, so closing locks.
 	if self.source == "slash" then self:SetEditing(false) else self:Deselect() end
 end
 
--- source: "editmode" (Blizzard's Edit Mode opened) or "slash" (/fn unlock).
+-- source: "editmode" (Blizzard's Edit Mode opened) or "slash" (/wr unlock).
 function EditMode:SetEditing(on, source)
 	on = on and true or false
 	if not self.selection then return end
@@ -345,7 +345,7 @@ function EditMode:SetEditing(on, source)
 	Panel:Reposition()
 	if on and source == "slash" then
 		self:Select()
-		ns.Print("drag the panel to move it. Close the FieldNotes window when you're done.")
+		ns.Print("drag the panel to move it. Close the Wayreader window when you're done.")
 	end
 end
 

@@ -1,6 +1,6 @@
 name: Release
 
-# Push a tag like v0.1.0 (or v0.2.0-beta.1) to package FieldNotes, publish a
+# Push a tag like v0.1.0 (or v0.2.0-beta.1) to package Wayreader, publish a
 # GitHub release, and upload the zip to CurseForge for WoW: Forever.
 
 on:
@@ -47,16 +47,16 @@ jobs:
 
       - name: Package addon zip
         run: |
-          sed -i "s/@project-version@/${VERSION}/" FieldNotes/FieldNotes.toc
+          sed -i "s/@project-version@/${VERSION}/" Wayreader/Wayreader.toc
           mkdir -p dist
-          zip -r "dist/FieldNotes-${VERSION}.zip" FieldNotes/
-          echo "ADDON_ZIP=dist/FieldNotes-${VERSION}.zip" >> "$GITHUB_ENV"
+          zip -r "dist/Wayreader-${VERSION}.zip" Wayreader/
+          echo "ADDON_ZIP=dist/Wayreader-${VERSION}.zip" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
-          name: FieldNotes ${{ env.VERSION }}
+          name: Wayreader ${{ env.VERSION }}
           body_path: CHANGELOG.txt
           prerelease: ${{ env.RELEASE_TYPE != 'release' }}
           files: ${{ env.ADDON_ZIP }}
@@ -75,7 +75,7 @@ jobs:
           API="https://wow.curseforge.com/api"
 
           # TOC interface -> CurseForge version name (16001 -> 1.60.1)
-          INTERFACE_VER=$(grep "^## Interface:" FieldNotes/FieldNotes.toc | awk '{print $NF}' | tr -d '\r')
+          INTERFACE_VER=$(grep "^## Interface:" Wayreader/Wayreader.toc | awk '{print $NF}' | tr -d '\r')
           VERSION_STR="$((INTERFACE_VER / 10000)).$(( (INTERFACE_VER % 10000) / 100 )).$((INTERFACE_VER % 100))"
 
           # Find the Forever version type by name unless pinned.
@@ -103,7 +103,7 @@ jobs:
           METADATA=$(jq -n \
             --rawfile changelog CHANGELOG.txt \
             --arg releaseType "$RELEASE_TYPE" \
-            --arg displayName "FieldNotes ${VERSION}" \
+            --arg displayName "Wayreader ${VERSION}" \
             --argjson gameVersion "$CF_VERSION_ID" \
             '{changelog: $changelog, changelogType: "markdown", displayName: $displayName,
               gameVersions: [$gameVersion], releaseType: $releaseType}')

@@ -1,13 +1,13 @@
 ## Interface: 16001
 ## AllowLoadGameType: forever
 ## ExcludeLoadGameType: standard, classic
-## Title: FieldNotes
+## Title: Wayreader
 ## Notes: Read your focused quest's story and objectives in a panel beside the objective tracker.
 ## Author: brandanq2
 ## Version: @project-version@
-## SavedVariables: FieldNotesDB
-## SavedVariablesPerCharacter: FieldNotesCharDB
-## X-Website: https://github.com/brandanq2/FieldNotes
+## SavedVariables: WayreaderDB
+## SavedVariablesPerCharacter: WayreaderCharDB
+## X-Website: https://github.com/brandanq2/Wayreader
 
 Core.lua
 Quest.lua

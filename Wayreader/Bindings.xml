@@ -1,0 +1,17 @@
+<Bindings>
+	<Binding name="WAYREADER_SCROLLDOWN" category="BINDING_CATEGORY_WAYREADER">
+		Wayreader.Scroll(1)
+	</Binding>
+	<Binding name="WAYREADER_SCROLLUP" category="BINDING_CATEGORY_WAYREADER">
+		Wayreader.Scroll(-1)
+	</Binding>
+	<Binding name="WAYREADER_PAGEDOWN" category="BINDING_CATEGORY_WAYREADER">
+		Wayreader.Page(1)
+	</Binding>
+	<Binding name="WAYREADER_PAGEUP" category="BINDING_CATEGORY_WAYREADER">
+		Wayreader.Page(-1)
+	</Binding>
+	<Binding name="WAYREADER_TOGGLE" category="BINDING_CATEGORY_WAYREADER">
+		Wayreader.ToggleCollapse()
+	</Binding>
+</Bindings>
